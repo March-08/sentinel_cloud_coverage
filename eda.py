@@ -25,5 +25,3 @@ if __name__ == '__main__':
         plt.savefig(f'{i}.png')
         
         
-        
-        

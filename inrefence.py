@@ -6,7 +6,7 @@ from torch import nn
 import torch 
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
-from model_architecture import UNET
+from src.model.model_architecture import UNET
 import cv2
 from torch.utils.data import Dataset
 import torch
