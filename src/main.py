@@ -13,7 +13,7 @@ if __name__ == '__main__':
        extract()
        
     if command.lower() == 'train':
-        run_experiment(lr= 0.01, epochs = 50)
+        run_experiment(lr= 0.01, epochs = 1)
        
     if command.lower() == 'onnx':
         torch_2_onnx(torch_model='unet2.pth' , onnx_model= 'unet2.onnx')
