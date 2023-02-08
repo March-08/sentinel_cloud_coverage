@@ -107,4 +107,65 @@ python src/main.py onnx
 This script will firsly check the consistency of the pth model and the onnx model. Then you will find in your main directory the model.onnx which will be ready to be used in inference with onnxruntime.
 
 
-### ONNX Inference
+# Inference on Google Colab
+ <img src="https://static.wikia.nocookie.net/logopedia/images/d/d8/Colab.png/revision/latest?cb=20201019223838" alt="easybase logo black" width="250" height="100">
+
+In this repository you will find an example of inference of the onnx model in a jupyter notebook. The same code can be used in Google Colab.
+
+Otherwise import the 'unet.onnx' model of this repository in your Google Colab workplace.
+Then let's import the needed libraries.
+
+```python
+import numpy as np
+import torch
+from torch import nn
+import matplotlib.pyplot as plt
+import onnx
+import onnxruntime
+from PIL import Image
+```
+
+Now import and load the model with the following commands.
+
+```python
+onnx_model = 'path_to_onnx_model.onnx'
+onnx_model = onnx.load(onnx_model)
+onnx.checker.check_model(onnx_model)
+ort_session = onnxruntime.InferenceSession(onnx_model.SerializeToString())
+```
+
+Now load and preprocess and image for inference. The expected shape of the model is (1,4,224,224). So we need to preprocess the original image of shape (224,224,4) 
+
+```python
+def to_numpy(tensor):
+        return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
+def preprocess(img):
+        img = torch.from_numpy(img).cpu().permute(2,0,1).unsqueeze(0)
+        img = (img - img.mean())/img.std()
+        return img.numpy()
+
+image_path = '../data/images_patches/img_18_patch_16.npy'
+mask_path = '../data/masks_patches/mask_18_patch_16.npy'
+
+img = np.load(image_path)
+mask = np.load(mask_path)
+```
+
+Now run the model
+
+```python
+ort_inputs = {ort_session.get_inputs()[0].name: preprocess(img)}
+ort_outs = ort_session.run(None, ort_inputs)[0]
+```
+
+If you want you can also plot the generated mask against the original one.
+
+```python
+plt.subplot(1,3,1)
+plt.imshow(img[:,:,[0,1,2]]) 
+plt.subplot(1,3,2)
+plt.imshow(mask) 
+plt.subplot(1,3,3)
+plt.imshow(ort_outs[0]) 
+plt.show()
+```

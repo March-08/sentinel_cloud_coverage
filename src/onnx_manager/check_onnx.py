@@ -15,7 +15,8 @@ def check_onnx(torch_model:str = 'unet.pth', onnx_model:str = 'unet.onnx') -> bo
         x = torch.randn(1, 4, 224, 224, requires_grad=True)
         torch_out = unet(x)
         
-        
+        assert os.path.getsize(onnx_model)<2500000, 'onnx model is to large'
+
         onnx_model = onnx.load(onnx_model)
         onnx.checker.check_model(onnx_model)
 
