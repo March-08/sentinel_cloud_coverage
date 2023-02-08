@@ -9,6 +9,10 @@ import matplotlib.pyplot as plt
 
 STEP = 146
 
+NIR_BAND = 9 #ask
+RGBN_CHANNELS = [3,2,1, NIR_BAND]
+RGB_CHANNELS = [3,2,1]
+
 def get_subscene_channels(subscene, channels:list):
   return subscene[...,channels]
 
@@ -65,9 +69,9 @@ def create_patches(output, images_paths, masks_paths) -> None:
 
       for n, data in enumerate(zip(image_patches, mask_patches)):
         img, mask = data[0], data[1]
-        if mask.sum() == 0 or mask.sum() == 224*224:
+        if mask.sum() < 2500 or mask.sum() >= 4800: #2500 is 5% of 224^2
             total_edge_cases +=1
-            if np.random.uniform(0,1) >= 0.98:
+            if np.random.uniform(0,1) >= 0.9:
               included_edge_cases +=1
               continue
         
@@ -94,9 +98,7 @@ def extract():
   masks_paths = [os.path.join(masks_extracted,x) for x in os.listdir(masks_extracted)]
   assert len(subscenes_paths) == len(masks_paths), 'not matching'
   
-  NIR_BAND = 9 #ask
-  RGBN_CHANNELS = [3,2,1, NIR_BAND]
-  RGB_CHANNELS = [3,2,1]
+  
   
   create_patches('data', subscenes_paths, masks_paths)
   

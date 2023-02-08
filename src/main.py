@@ -13,11 +13,11 @@ if __name__ == '__main__':
        extract()
        
     if command.lower() == 'train':
-        run_experiment(lr= 0.01, epochs = 1)
+        run_experiment(lr= 0.01, epochs = 50)
        
     if command.lower() == 'onnx':
-        torch_2_onnx(torch_model='unet2.pth' , onnx_model= 'unet2.onnx')
-        assert check_onnx(torch_model= 'unet2.pth', onnx_model='unet2.onnx'), 'onnx output is not consistent'
+        torch_2_onnx(torch_model='unet.pth' , onnx_model= 'unet.onnx')
+        assert check_onnx(torch_model= 'unet.pth', onnx_model='unet.onnx'), 'onnx output is not consistent'
     
     if command.lower() == 'inference':
         inference(onnx_model='unet2.onnx', img_path= 'data/images_patches/img_0_patch_6.npy')
