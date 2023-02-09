@@ -3,6 +3,7 @@ import onnx
 import onnxruntime
 import numpy as np
 import torch
+import os
 from model.model_architecture import UNET
 
 def to_numpy(tensor):
