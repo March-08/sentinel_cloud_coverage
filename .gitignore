@@ -1,4 +1,10 @@
-data/
+data/images_patches/*
+data/masks/*
+data/masks_patches/*
+data/subscenes/*
+
 50_unet.pth
 token.txt
 train_losses.png
+data/masks.zip?download=1
+data/subscenes.zip?download=1
