@@ -9,7 +9,7 @@ from model.model_architecture import UNET
 def to_numpy(tensor):
         return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
 
-def check_onnx(torch_model:str = 'unet.pth', onnx_model:str = 'unet.onnx') -> bool:
+def check_onnx(torch_model:str = 'outputs/unet.pth', onnx_model:str = 'outputs/unet.onnx') -> bool:
         unet = UNET(4,1)
         unet.load_state_dict(torch.load(torch_model))
         unet.eval()

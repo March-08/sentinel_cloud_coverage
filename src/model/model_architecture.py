@@ -1,5 +1,6 @@
 import torch 
 from torch import nn
+import numpy as np
 
 class UNET(nn.Module):
     def __init__(self, in_channels, out_channels):
@@ -42,7 +43,6 @@ class UNET(nn.Module):
             torch.nn.ReLU(),
             torch.nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
                                  )
-
         return contract
 
     def expand_block(self, in_channels, out_channels, kernel_size, padding):
@@ -56,3 +56,22 @@ class UNET(nn.Module):
                             torch.nn.ConvTranspose2d(out_channels, out_channels, kernel_size=3, stride=2, padding=1, output_padding=1) 
                             )
         return expand
+
+### EARLY STOPPING ###
+class EarlyStopper:
+    def __init__(self, patience=1, min_delta=0):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0
+        self.min_validation_loss = np.inf
+
+    def early_stop(self, validation_loss):
+        if validation_loss < self.min_validation_loss:
+            self.min_validation_loss = validation_loss
+            self.counter = 0
+        elif validation_loss > (self.min_validation_loss + self.min_delta):
+            self.counter += 1
+            if self.counter >= self.patience:
+                print('\n Early Stopper : Stopping Train')
+                return True
+        return False

@@ -1,31 +1,16 @@
-#!pip install 
-
 from patchify import patchify
-import pandas as pd
 import numpy as np
 import os
-import matplotlib.pyplot as plt
-
 
 STEP = 146
-
-NIR_BAND = 9 #ask
+NIR_BAND = 7 #ask
 RGBN_CHANNELS = [3,2,1, NIR_BAND]
-RGB_CHANNELS = [3,2,1]
 
 def get_subscene_channels(subscene, channels:list):
   return subscene[...,channels]
 
 def mask_2_binary_mask(mask:np.ndarray) -> np.ndarray:
-  clear_annotation = mask[:,:,0]
-  cloud_annotation = mask[:,:,1]
-  cloud_shadow_annotation = mask[:,:,2]
-  assert clear_annotation.shape == cloud_annotation.shape == cloud_shadow_annotation.shape, 'shape not matching'
-  
-  #1 where cloud is present 0 if clear of cloud shadow 
-  binary_mask = cloud_annotation
-  return binary_mask
-
+  return mask[:,:,1]
 
 def image_2_patches(image, patch_shape:tuple = (224,224,4) , step:int = STEP):
     patches = patchify(image = image, patch_size = patch_shape , step = STEP)
@@ -60,7 +45,6 @@ def create_patches(output, images_paths, masks_paths) -> None:
       mask = np.load(data[1])
       mask = mask_2_binary_mask(mask)
 
-      #image
       image_patches = patchify(image = image, patch_size = (224,224,4), step = STEP)
       image_patches = image_patches.reshape(-1, 224, 224, 4)
 
@@ -69,12 +53,11 @@ def create_patches(output, images_paths, masks_paths) -> None:
 
       for n, data in enumerate(zip(image_patches, mask_patches)):
         img, mask = data[0], data[1]
-        if mask.sum() < 2500 or mask.sum() >= 4800: #2500 is 5% of 224^2
+        if mask.sum() < 2500 or mask.sum() >= 4800: #2500 is 5% of 224^2, 4800 is almost total
             total_edge_cases +=1
             if np.random.uniform(0,1) >= 0.9:
               included_edge_cases +=1
               continue
-        
         #img
         out = os.path.join(images_pathces_path,f"img_{i}_patch_{n}.npy")
         np.save(out, img)
@@ -82,6 +65,7 @@ def create_patches(output, images_paths, masks_paths) -> None:
         out = os.path.join(masks_pathces_path,f"mask_{i}_patch_{n}.npy")
         np.save(out, mask)
       
+      #free memory
       del image_patches 
       del mask_patches
     print('patches created!')
@@ -97,12 +81,8 @@ def extract():
   subscenes_paths = [os.path.join(subscenes_extracted,x) for x in os.listdir(subscenes_extracted)]
   masks_paths = [os.path.join(masks_extracted,x) for x in os.listdir(masks_extracted)]
   assert len(subscenes_paths) == len(masks_paths), 'not matching'
-  
-  
-  
   create_patches('data', subscenes_paths, masks_paths)
   
-
 
 if __name__ == '__main__':
   extract()

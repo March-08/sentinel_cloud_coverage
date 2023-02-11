@@ -1,12 +1,7 @@
-import io
-import numpy as np
-
-from torch import nn
-import torch.utils.model_zoo as model_zoo
 import torch.onnx
 from model.model_architecture import UNET
 
-def torch_2_onnx(torch_model:str = 'unet.pth',  onnx_model= 'unet.onnx'):
+def torch_2_onnx(torch_model:str = 'outputs/unet.pth',  onnx_model= 'outputs/unet.onnx'):
     unet = UNET(4,1)
     unet.load_state_dict(torch.load(torch_model))
     unet.eval()
