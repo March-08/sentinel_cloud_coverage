@@ -1,3 +1,4 @@
 data/
 50_unet.pth
 token.txt
+train_losses.png
