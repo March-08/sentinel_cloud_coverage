@@ -1,6 +1,6 @@
 <p align="left">
   <a href="https://easybase.io">
-    <img src="https://www.esa-bic.cz/wp-content/uploads/2021/07/logo-transparent.svg" alt="easybase logo black" width="100" height="100">
+    <img src="" alt="easybase logo black" width="100" height="100">
   </a>
 </p>
 
