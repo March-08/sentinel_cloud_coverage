@@ -42,6 +42,20 @@ Then I will convert it to onnx and run with onnxruntime.
 This Readme will help you to replicate all my work step by step.
 <br/>
 
+The model was validated using kfold-cross-validation for a more robust validation.
+The model loss and accuracy was monitored during training.
+Hyperparameters:
+  - optimizer : Adam
+  - learning rate : 0.01
+  - batch_size : 128
+
+## 💡 Some Future Work
+- See how different augmentation can help
+- Try different models
+- Monitor other metrics (i.e IoU)
+- Use some monitoring tool (W&B)
+- Set config file for hyperparameters (usually YAML)
+- Search optimal hyperparameters
 
 <!-- CLONE -->
 ## 💻 Clone Repo

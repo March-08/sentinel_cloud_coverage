@@ -12,7 +12,7 @@ if __name__ == '__main__':
        extract()
        
     if command.lower() == 'train':
-        run_experiment(kfolds=2, lr = 0.01, epochs= 10, batch_size= 128)
+        run_experiment(kfolds=3, lr = 0.005, epochs= 12, batch_size= 64)
        
     if command.lower() == 'onnx':
         torch_2_onnx(torch_model='outputs/unet.pth' , onnx_model= 'outputs/unet.onnx')

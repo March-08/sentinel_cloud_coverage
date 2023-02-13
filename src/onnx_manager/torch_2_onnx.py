@@ -1,10 +1,11 @@
 import torch.onnx
-from model.model_architecture import UNET
+from model.model_architecture import UNET, Wrapper
 
 def torch_2_onnx(torch_model:str = 'outputs/unet.pth',  onnx_model= 'outputs/unet.onnx'):
-    unet = UNET(4,1)
+    unet = UNET(4,2)
     unet.load_state_dict(torch.load(torch_model))
     unet.eval()
+    #wrapper = Wrapper(unet)
     x = torch.randn(1, 4, 224, 224, requires_grad=True)
     torch_out = unet(x)
     

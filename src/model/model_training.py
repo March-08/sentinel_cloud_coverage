@@ -3,7 +3,6 @@ import os
 import matplotlib.pyplot as plt
 from torch import nn
 import torch 
-from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import torch
@@ -49,7 +48,13 @@ def train(model, train_dl, valid_dl, loss_fn, optimizer, acc_fn, epochs=1):
         print('-' * 10)
 
         for phase in ['train', 'valid']:
-            dataloader = train_dl if phase == 'train' else valid_dl
+            if phase == 'train':
+                model.train(True)  # Set trainind mode = true
+                dataloader = train_dl
+            else:
+                model.train(False)  # Set model to evaluate mode
+                dataloader = valid_dl
+
             running_loss = 0.0
             running_acc = 0.0
 
@@ -75,11 +80,11 @@ def train(model, train_dl, valid_dl, loss_fn, optimizer, acc_fn, epochs=1):
 
                 # stats - whatever is the phase
                 acc = acc_fn(outputs, y)
-                running_acc  += acc*dataloader.batch_size
-                running_loss += loss*dataloader.batch_size 
+                running_acc  += acc#*dataloader.batch_size
+                running_loss += loss#*dataloader.batch_size 
 
-            epoch_loss = running_loss / len(dataloader.sampler)
-            epoch_acc = running_acc / len(dataloader.sampler)
+            epoch_loss = running_loss / len(dataloader)#len(dataloader.sampler)
+            epoch_acc = running_acc / len(dataloader) #len(dataloader.sampler)
             print('{} Loss: {:.4f} Acc: {}'.format(phase, epoch_loss, epoch_acc))
             
             if phase == 'train':
@@ -109,9 +114,8 @@ def run_experiment(kfolds:int = 2, lr:float = 0.01, epochs:int = 10, batch_size:
     
     
     ### SPLIT ###
-    total_idxs = np.arange(len(image_patches))
-    images = image_patches[total_idxs]
-    masks = mask_patches[total_idxs]
+    images = image_patches
+    masks = mask_patches
     transform = get_train_transforms()
     dataset = SegmentationDataset(images, masks, transforms= None)
     transformed_dataset = SegmentationDataset(images, masks, transforms= transform)
@@ -120,11 +124,12 @@ def run_experiment(kfolds:int = 2, lr:float = 0.01, epochs:int = 10, batch_size:
     avg_train_loss , avg_train_acc = [], []
     avg_valid_loss, avg_valid_acc = [], []
 
-    for fold, (train_idx,val_idx) in enumerate(splits.split(np.arange(len(total_idxs)))):
+    for fold, (train_idx,val_idx) in enumerate(splits.split(dataset)):
         print(f"FOLD : {fold}\n")
         train_sampler = SubsetRandomSampler(train_idx)
         val_sampler = SubsetRandomSampler(val_idx)
         train_loader = DataLoader(transformed_dataset, batch_size= batch_size, sampler=train_sampler)
+        #train_loader = DataLoader(dataset, batch_size= batch_size, sampler=train_sampler)
         val_loader = DataLoader(dataset, batch_size= batch_size, sampler=val_sampler)
 
         unet = UNET(4,1)
@@ -156,6 +161,5 @@ def run_experiment(kfolds:int = 2, lr:float = 0.01, epochs:int = 10, batch_size:
 if __name__ =='__main__':
     run_experiment()
     
-
 
 

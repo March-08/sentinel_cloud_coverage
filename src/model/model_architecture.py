@@ -1,11 +1,23 @@
 import torch 
 from torch import nn
 import numpy as np
+import torchvision.transforms.functional as TF
+
+class Wrapper(nn.Module):
+    def __init__(self, unet:nn.Module):
+        super().__init__()
+        self.unet = unet
+
+    def __call__(self, x):
+        out = self.unet(x)
+        if out.shape == (1,1,224,224):
+            return out.squeeze(0).squeeze(0)
+        return out.squeeze(1)
+
 
 class UNET(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
-
         self.conv1 = self.contract_block(in_channels, 32, 7, 3)
         self.conv2 = self.contract_block(32, 64, 3, 1)
         self.conv3 = self.contract_block(64, 128, 3, 1)
@@ -25,15 +37,11 @@ class UNET(nn.Module):
 
         upconv2 = self.upconv2(torch.cat([upconv3, conv2], 1))
         upconv1 = self.upconv1(torch.cat([upconv2, conv1], 1))
+
+        return upconv1
         
-        if self.training:
-            return upconv1
-        else:
-            pred = torch.sigmoid(upconv1) > 0.5 
-            return pred.squeeze(0).squeeze(0)
         
     def contract_block(self, in_channels, out_channels, kernel_size, padding):
-
         contract = nn.Sequential(
             torch.nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=1, padding=padding),
             torch.nn.BatchNorm2d(out_channels),
@@ -46,7 +54,6 @@ class UNET(nn.Module):
         return contract
 
     def expand_block(self, in_channels, out_channels, kernel_size, padding):
-
         expand = nn.Sequential(torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=padding),
                             torch.nn.BatchNorm2d(out_channels),
                             torch.nn.ReLU(),

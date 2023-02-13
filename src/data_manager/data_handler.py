@@ -14,8 +14,8 @@ class SegmentationDataset(Dataset):
     return len(self.image_paths)
   
   def __getitem__(self, idx):
-    imagePath = self.image_paths[idx]
-    image = np.load(imagePath)
+    image_path = self.image_paths[idx]
+    image = np.load(image_path)
     image = torch.from_numpy(image).permute(2,0,1) #(224,224,4) -> (4,224,224)
     
     #normalize
@@ -30,8 +30,8 @@ class SegmentationDataset(Dataset):
       mask = self.transforms(mask)
 
     return {
-        'imagePath': imagePath,
-        'maskPath':self.mask_paths[idx],
+        'image_path': image_path,
+        'mask_path':self.mask_paths[idx],
         'image':image,
         'mask':mask.long()
     }
@@ -42,5 +42,5 @@ def get_train_transforms():
       transforms.RandomVerticalFlip(p = 0.5),
       transforms.RandomRotation(degrees = 90),
       transforms.GaussianBlur(kernel_size=5),
-      transforms.RandomCrop(size=112),
+      #transforms.RandomCrop(size=112),
               ])
