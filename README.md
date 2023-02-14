@@ -143,9 +143,9 @@ import numpy as np
 import torch
 from torch import nn
 import matplotlib.pyplot as plt
+import math
 import onnx
 import onnxruntime
-from PIL import Image
 ```
 
 Now import and load the model with the following commands.
@@ -163,9 +163,21 @@ Now load and preprocess and image for inference. The expected shape of the model
 def to_numpy(tensor):
         return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
 def preprocess(img):
+        '''
+        input img shape :(224, 224, 4)
+        output normalized img shape: (4, 224, 224)
+        '''
+        print(img.shape)
         img = torch.from_numpy(img).cpu().permute(2,0,1).unsqueeze(0)
         img = (img - img.mean())/img.std()
         return img.numpy()
+
+def sigmoid(x):
+  return 1 / (1 + math.exp(-x))
+sigmoid_v = np.vectorize(sigmoid)     
+
+def post_process(ort_outs):
+        return sigmoid_v(ort_outs[0][0,0,:,:]) > 0.5
 
 image_path = '../data/images_patches/img_18_patch_16.npy'
 mask_path = '../data/masks_patches/mask_18_patch_16.npy'
@@ -177,18 +189,22 @@ mask = np.load(mask_path)
 Now run the model
 
 ```python
+# compute ONNX Runtime output prediction
 ort_inputs = {ort_session.get_inputs()[0].name: preprocess(img)}
-ort_outs = ort_session.run(None, ort_inputs)[0]
+ort_outs = ort_session.run(None, ort_inputs)
 ```
 
 If you want you can also plot the generated mask against the original one.
 
 ```python
 plt.subplot(1,3,1)
-plt.imshow(img[:,:,[0,1,2]]) 
+plt.imshow(img[:,:,[0,1,2]]) # for visualization we have to transpose back to HWC
 plt.subplot(1,3,2)
-plt.imshow(mask) 
+plt.imshow(mask) # for visualization we have to remove 3rd dimension of mask
 plt.subplot(1,3,3)
-plt.imshow(ort_outs[0]) 
+plt.imshow(post_process(ort_outs)) 
 plt.show()
 ```
+
+<img src="example.PNG" alt="Forest" style="width:50%">
+
