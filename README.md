@@ -49,6 +49,15 @@ Hyperparameters:
   - learning rate : 0.01
   - batch_size : 128
 
+<div class="row">
+  <div class="column">
+    <img src="outputs/accuracies.png" alt="Snow" style="width:100%">
+  </div>
+  <div class="column">
+    <img src="outputs/losses.png" alt="Forest" style="width:100%">
+  </div>
+</div>
+
 ## 💡 Some Future Work
 - See how different augmentation can help
 - Try different models
