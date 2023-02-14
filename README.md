@@ -33,7 +33,7 @@ The the trained model should be converted in onnx and used in inference with onn
 
 ## 💡 Solution
 I will firstly tile the images (and their mask) in order to obtain 224x224 images. Note thaht only the cloud channel is needed from the 3 mask channels.
-Then I can use a pretrained network to solve the task. The problem with this is that these pretrained UNET bases network are pretty large, so pruning/quantization method is needed in this case. 
+Then I can use a pretrained network to solve the task. The problem with this, is that these pretrained UNET bases network are pretty large, so pruning/quantization method is needed in this case. 
 So instead I will develop a small UNET based network from scratch. The small model is based on the paper [Convolutional Neural Networks enable efficient, accurate and fine-grained segmentation of plant species and communities from high-resolution UAV imagery](https://www.nature.com/articles/s41598-019-53797-9)  
 
 <center><img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41598-019-53797-9/MediaObjects/41598_2019_53797_Fig1_HTML.png" alt="model" width="500" height="250"></center>
@@ -43,7 +43,7 @@ This Readme will help you to replicate all my work step by step.
 <br/>
 
 The model was validated using kfold-cross-validation for a more robust validation.
-The model loss and accuracy was monitored during training.
+The model loss and accuracy was monitored during training.Some basic augmentation technique were used (flips, blur)
 Hyperparameters:
   - optimizer : Adam
   - learning rate : 0.01
@@ -123,7 +123,7 @@ python src/main.py train
 
 
 ### ONNX Conversion
-Now its time conver the PyTorch model to ONNX. I used the [torch.onnx module](https://pytorch.org/docs/stable/onnx.html). To run the conversion you can use the following command:
+Now its time to convert the PyTorch model to ONNX. I used the [torch.onnx module](https://pytorch.org/docs/stable/onnx.html). To run the conversion you can use the following command:
 ```
 python src/main.py onnx
 ```
