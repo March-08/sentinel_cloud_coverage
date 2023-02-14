@@ -2,7 +2,7 @@ import torch.onnx
 from model.model_architecture import UNET, Wrapper
 
 def torch_2_onnx(torch_model:str = 'outputs/unet.pth',  onnx_model= 'outputs/unet.onnx'):
-    unet = UNET(4,2)
+    unet = UNET(4,1)
     unet.load_state_dict(torch.load(torch_model))
     unet.eval()
     #wrapper = Wrapper(unet)

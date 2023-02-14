@@ -10,7 +10,7 @@ def to_numpy(tensor):
         return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
 
 def check_onnx(torch_model:str = 'outputs/unet.pth', onnx_model:str = 'outputs/unet.onnx') -> bool:
-        unet = UNET(4,2)
+        unet = UNET(4,1)
         unet.load_state_dict(torch.load(torch_model))
         unet.eval()
         x = torch.randn(1, 4, 224, 224, requires_grad=True)
